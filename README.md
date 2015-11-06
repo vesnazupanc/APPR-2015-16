@@ -1,5 +1,7 @@
 # Analiza podatkov s programom R, 2015/16
 
+Avtor: Vesna Zupanc
+
 Repozitorij z gradivi pri predmetu APPR v študijskem letu 2015/16.
 
 ## Tematika
