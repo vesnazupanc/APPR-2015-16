@@ -1,4 +1,4 @@
-# Analiza podatkov s programom R, 2015/16
+# Analiza smrti v Sloveniji
 
 Avtor: Vesna Zupanc
 
@@ -6,8 +6,15 @@ Repozitorij z gradivi pri predmetu APPR v študijskem letu 2015/16.
 
 ## Tematika
 
-Izbrali si boste temo, s katero se bo vaš projekt ukvarjal. Tukaj boste
-napisali, kje ste dobili podatke, ter kakšen je vaš cilj.
+Analizirala bom umrljivost v Sloveniji. Podatke, ki jih bom pridobila bom analizirala po najpogostejših vzrokih za smrt, starosti ter številu smrti po regijah. 
+
+Cilj moje analize je predvsem spoznati, kaj je najpogostejši vzrok smrti pri nas, kakšna je najpogostejša starost za smrt, kako se to s časom spremija (če se) ter kje v Sloveniji je najvišja stopnja umrljivosti. 
+
+Podatki:
+
+* `http://pxweb.stat.si/pxweb/Database/Dem_soc/05_prebivalstvo/32_Umrljivost/05_05L10_umrli_SL/05_05L10_umrli_SL.asp`
+* `https://podatki.nijz.si/pxweb/sl/NIJZ%20podatkovni%20portal/NIJZ%20podatkovni%20portal__3%20Zdravstveno%20stanje%20prebivalstva__3a%20Umrli/?rxid=1bcad944-2947-4c49-8ea7-dfb7131f00e9`
+
 
 ## Program
 
