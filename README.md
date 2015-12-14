@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 # Analiza smrti v Sloveniji
 
 Avtor: Vesna Zupanc
@@ -12,9 +15,9 @@ Cilj moje analize je predvsem spoznati, kaj je najpogostejši vzrok smrti pri na
 
 Podatki:
 
-* `http://pxweb.stat.si/pxweb/Database/Dem_soc/05_prebivalstvo/32_Umrljivost/05_05L10_umrli_SL/05_05L10_umrli_SL.asp`
-* `https://podatki.nijz.si/pxweb/sl/NIJZ%20podatkovni%20portal/NIJZ%20podatkovni%20portal__3%20Zdravstveno%20stanje%20prebivalstva__3a%20Umrli/?rxid=1bcad944-2947-4c49-8ea7-dfb7131f00e9`
-* `http://www.stat.si/StatWeb/glavnanavigacija/podatki/prikazistaronovico?IdNovice=4013`
+* [linked phrase](http://pxweb.stat.si/pxweb/Database/Dem_soc/05_prebivalstvo/32_Umrljivost/05_05L10_umrli_SL/05_05L10_umrli_SL.asp)
+* [linked phrase](https://podatki.nijz.si/pxweb/sl/NIJZ%20podatkovni%20portal/NIJZ%20podatkovni%20portal__3%20Zdravstveno%20stanje%20prebivalstva__3a%20Umrli/?rxid=1bcad944-2947-4c49-8ea7-dfb7131f00e9)
+* [linked phrase](http://www.stat.si/StatWeb/glavnanavigacija/podatki/prikazistaronovico?IdNovice=4013)
 
 
 ## Program

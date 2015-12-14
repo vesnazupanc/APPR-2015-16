@@ -16,6 +16,19 @@ write.csv(umrli.obcine,"umrli.obcine.csv",row.names=FALSE)
 
 
 
+#umrli po starostnih skupinah
+
+leta = c("","starost", 2004:2014)
+umrli.starost <- read.csv2(file = "podatki/umrli-starost.csv", skip = 3, nrow=(23-4), col.names = leta, fileEncoding= "cp1250")
+umrli.starost <- umrli.starost[-1]
+
+#umrli po vzrokih, 2004-2014
+
+leta2 = c("vzrok",2004:2014)
+umrli.vzrok <- read.csv2(file = "podatki/vzrok-2004-2014.csv", skip = 2, nrow=(23-3), col.names = leta2, fileEncoding= "cp1250")
+
+
+
 
 ##Uvoz podatkov iz članka na spletni strani stat.si
 
