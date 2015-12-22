@@ -1,7 +1,4 @@
 # 2. faza: Uvoz podatkov
-require(dplyr)
-require(rvest)
-require(gsubfn)
 
 
 #umrli po občinah v letu 2014
@@ -12,14 +9,15 @@ uvozi.obcine <- function(){
 }
 
 umrli.obcine <- uvozi.obcine()
-write.csv(umrli.obcine,"umrli.obcine.csv",row.names=FALSE)
+
 
 
 
 #umrli po starostnih skupinah
 
 leta = c("","starost", 2004:2014)
-umrli.starost <- read.csv2(file = "podatki/umrli-starost.csv", skip = 3, nrow=(23-4), col.names = leta, fileEncoding= "cp1250")
+umrli.starost <- read.csv2(file = "podatki/umrli-starost.csv", skip = 4, nrow=(23-4),
+                           header = FALSE, col.names = leta, fileEncoding= "cp1250")
 umrli.starost <- umrli.starost[-1]
 
 #umrli po vzrokih, 2004-2014
@@ -60,7 +58,6 @@ tabela1[,2:5] <- apply(tabela1[,2:5], 2, . %>% gsub("\\.", "", .) %>%
                                                as.numeric())
 
 
-write.csv(tabela1,"tabela1.csv",row.names=FALSE)
-write.csv(tabela2,"tabela2.csv",row.names=FALSE)
+
 
 
