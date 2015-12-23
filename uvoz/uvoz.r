@@ -24,7 +24,7 @@ umrli.starost <- umrli.starost[-1]
 
 leta2 = c("vzrok",2004:2014)
 umrli.vzrok <- read.csv2(file = "podatki/vzrok-2004-2014.csv", skip = 2, nrow=(23-3), col.names = leta2, fileEncoding= "cp1250")
-
+umrlivzrok<-umrli.vzrok[-1,]
 
 
 

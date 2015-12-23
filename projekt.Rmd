@@ -44,6 +44,8 @@ source("uvoz/uvoz.r", encoding = "UTF-8")
 Uvozila sem podatke v obliki csv s statističnega urada ter v obliki HTML, kjer sem uvozila dve tabeli iz članka, ki je objavlen na stat.si. 
 
 Pri podatkih, ki sem jih uvozila v obliki HTML, sem namesto ene vrstice, ki se je potem ločila na dve, naredila dve novi vrstici. To sem naredila za povprečno starost umrlih ter pričakovano trajanje življenja, oboje posebej za moške in ženske. 
+Pri obeh tabelah sem decimalne vejice zamenjala za pike in poskrbela da so številke spremenljivke res številke.
+
 
 Poglejmo si tabeli:
 
@@ -61,14 +63,24 @@ kable(head(umrli.obcine))
 kable(head(umrli.starost))
 ```
 
-
-Za vpogled, zakaj v Sloveniji umre veliko ljudi, sem naredila graf, ki prikazuje število smrti za posamezen vzrok:
+V Grafu sem pokazala število smrti glede na starost:
 
 ```{r graf1, echo=FALSE}
-ggplot(umrli.vzrok, aes(x = vzrok, y = X2014)) + geom_bar(stat = "identity") + labs(title ="Število umrlih po vzroku v letu 2014", x = "vzrok smrti", y = "") + theme_classic()
+ggplot(umrli.starost, aes(x = starost , y = X2014)) + 
+      geom_bar(stat='identity') + 
+      labs(title ="število umrlih po starosti v letu 2014", x = "starost", y = "") + 
+      theme_classic()+ 
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
 
+V tortnem diagramu sem pokazala število smrti po posameznem vzroku:
 
-ggplot(umrli.starost, aes(x = starost , y = X2014)) + geom_bar(stat='identity') + labs(title ="število umrlih po starosti v letu 2014", x = "starost", y = "") + theme_classic()
+```{r tortni, echo=FALSE}
+ggplot(umrlivzrok,aes(x=factor(1),y=X2014,fill=vzrok))+
+      geom_bar(width=1,stat="identity")+coord_polar(theta="y") + 
+      labs(title ="vzroki smrti", x = "", y = "") + 
+      guides(fill=guide_legend(ncol=2, title=NULL)) + 
+      theme(legend.position = "bottom", legend.text = element_text(colour="black", size = 5))
 ```
 
 
