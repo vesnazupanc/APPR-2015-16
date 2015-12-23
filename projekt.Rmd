@@ -63,6 +63,7 @@ kable(head(umrli.obcine))
 kable(head(umrli.starost))
 ```
 
+\pagebreak
 V Grafu sem pokazala število smrti glede na starost:
 
 ```{r graf1, echo=FALSE}
@@ -73,6 +74,7 @@ ggplot(umrli.starost, aes(x = starost , y = X2014)) +
       theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 ```
 
+\pagebreak
 V tortnem diagramu sem pokazala število smrti po posameznem vzroku:
 
 ```{r tortni, echo=FALSE}
