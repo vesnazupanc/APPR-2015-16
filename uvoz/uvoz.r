@@ -1,30 +1,98 @@
 # 2. faza: Uvoz podatkov
 
+##Uvozim tabelo, ki prikazuje umrle po starosti, spolu in po letih 2010-2014:
 
-#umrli po občinah v letu 2014
+stolpci = c("Starost","Spol","Leto","Umrli")
+umrli.starost <- read.csv2(file="podatki/umrli_starost.csv", col.names=stolpci, fileEncoding="cp1250")
 
-stolpci = c("Občina", "Umrli", "Umrli mlajši od 65 let", "Prezgonja umrljivost")
-uvozi.obcine <- function(){
-  read.csv2(file= "podatki/podatki-obcine.csv", skip=4, nrow=(216-5), col.names=stolpci, fileEncoding="cp1250")
+#poskrbim, da je spol tipa character ter uporabim kodo UTF-8 za prikaz šumnikov
+umrli.starost[,2] <- as.character(umrli.starost[,2])
+Encoding(umrli.starost[[2]])<-"UTF-8"
+
+
+#Funkcija, ki mi za vsako leto in spol izračuna št. vseh umrlih:
+
+stevilo.umrlih <- function(leto, spol){
+  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
+  sum(podatki$Umrli, na.rm=TRUE)
 }
 
-umrli.obcine <- uvozi.obcine()
+#Funkcija, ki mi za leto in spol izračuna povprečno starost umrlih:
+
+povprecna.starost <- function(leto, spol){
+  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
+  round(sum(c(0:100)*podatki$Umrli)/sum(podatki$Umrli,na.rm=TRUE),2)
+}
+
+
+#Naredim funkcijo, ki mi za vsako leto izračuna št. umrlih mlajših od 65 let ter njihov delež (prezgodnja umrljivost)
+
+mlajsi.od.65 <- function(leto,spol){
+  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
+  sum(podatki[1:65,4], 2, na.rm=TRUE)
+}
+
+prezgodnja.umrljivost <- function(leto,spol){
+  round((mlajsi.od.65(leto,spol)/stevilo.umrlih(leto,spol))*100,2)
+}
+  
+#Naredim vektorje za novo tabelo:
+
+Umrli <- c(stevilo.umrlih(2010, "Moški"),stevilo.umrlih(2011, "Moški"),stevilo.umrlih(2012, "Moški"),stevilo.umrlih(2013, "Moški"),stevilo.umrlih(2014, "Moški"),
+                 stevilo.umrlih(2010, "Ženske"),stevilo.umrlih(2011, "Ženske"),stevilo.umrlih(2012, "Ženske"),stevilo.umrlih(2013, "Ženske"),stevilo.umrlih(2014, "Ženske"))
+
+Povprecje <- c(povprecna.starost(2010, "Moški"),povprecna.starost(2011, "Moški"),povprecna.starost(2012, "Moški"),povprecna.starost(2013, "Moški"),povprecna.starost(2014, "Moški"),
+               povprecna.starost(2010, "Ženske"),povprecna.starost(2011, "Ženske"),povprecna.starost(2012, "Ženske"),povprecna.starost(2013, "Ženske"),povprecna.starost(2014, "Ženske"))
+
+Mlajsi.od.65.let <- c(mlajsi.od.65(2010, "Moški"),mlajsi.od.65(2011, "Moški"),mlajsi.od.65(2012, "Moški"),mlajsi.od.65(2013, "Moški"),mlajsi.od.65(2014, "Moški"),
+                      mlajsi.od.65(2010, "Ženske"),mlajsi.od.65(2011, "Ženske"),mlajsi.od.65(2012, "Ženske"),mlajsi.od.65(2013, "Ženske"),mlajsi.od.65(2014, "Ženske"))
+
+Prezgodnja.umrljivost <- c(prezgodnja.umrljivost(2010, "Moški"),prezgodnja.umrljivost(2011, "Moški"),prezgodnja.umrljivost(2012, "Moški"),prezgodnja.umrljivost(2013, "Moški"),prezgodnja.umrljivost(2014, "Moški"),
+                           prezgodnja.umrljivost(2010, "Ženske"),prezgodnja.umrljivost(2011, "Ženske"),prezgodnja.umrljivost(2012, "Ženske"),prezgodnja.umrljivost(2013, "Ženske"),prezgodnja.umrljivost(2014, "Ženske"))
+
+Leto <- c(2010,2011,2012,2013,2014)
+Spol <- c(rep("Moški", 5),rep("Ženske", 5))
+
+umrljivost <- data.frame(Leto,Spol,Umrli,Povprecje,Mlajsi.od.65.let,Prezgodnja.umrljivost)
+umrljivost[,2] <- as.character(umrljivost[,2])
 
 
 
 
-#umrli po starostnih skupinah
 
-leta = c("","starost", 2004:2014)
-umrli.starost <- read.csv2(file = "podatki/umrli-starost.csv", skip = 4, nrow=(23-4),
-                           header = FALSE, col.names = leta, fileEncoding= "cp1250")
-umrli.starost <- umrli.starost[-1]
 
-#umrli po vzrokih, 2004-2014
+#uvozim tabelo, ki prikazuje število smrti po spolu, regijah, vzroku smrti ter letih
 
-leta2 = c("vzrok",2004:2014)
-umrli.vzrok <- read.csv2(file = "podatki/vzrok-2004-2014.csv", skip = 2, nrow=(23-3), col.names = leta2, fileEncoding= "cp1250")
-umrlivzrok<-umrli.vzrok[-1,]
+imena2 <- c("Spol","Regija","Leto","Vzrok","Število umrlih")
+umrli.vzrok <- read.csv2(file= "podatki/vzrok_smrti.csv",col.names=imena2, fileEncoding="cp1250")
+
+#Poskrbimo, da so spol,občine in vzroki tipa character, ter uporabimo kodo UTF-8, da bodo prikazani šumniki
+
+umrli.vzrok[,1:2] <- apply(umrli.vzrok[,1:2], 2, . %>% as.character())
+umrli.vzrok[,4] <- as.character(umrli.vzrok[,4]) 
+Encoding(umrli.vzrok[[1]])<-"UTF-8"
+Encoding(umrli.vzrok[[2]])<-"UTF-8"
+Encoding(umrli.vzrok[[4]])<-"UTF-8"
+
+
+
+Vzroki <- c("Neoplazme","Bolezni obtočil","Bolezni dihal","Bolezni prebavil","Poškodbe, zastrupitve in zunanji vzroki")
+
+
+stevilo_vzroki <- function(vzrok){
+  podatki <- filter(umrli.vzrok, Vzrok == vzrok)
+  sum(podatki$Število.umrlih, na.rm=TRUE)
+}
+
+
+stevilo.vzrok = c(stevilo_vzroki("Neoplazme (C00-D48)"), stevilo_vzroki("Bolezni obtočil (I00-I99)"),
+                  stevilo_vzroki("Bolezni dihal (J00-J99)"), stevilo_vzroki("Bolezni prebavil (K00-K93)"),
+                  stevilo_vzroki("Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)"))
+
+
+Bolezni <- data.frame(Vzroki, Umrli = stevilo.vzrok)
+
+
 
 
 

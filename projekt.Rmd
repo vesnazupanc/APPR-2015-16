@@ -26,12 +26,9 @@ Cilj moje analize je predvsem spoznati, kaj je najpogostejši vzrok smrti pri na
 
 Podatke sem pridobila iz spletnih strani:
 
-* http://pxweb.stat.si/pxweb/Database/Dem_soc/05_prebivalstvo/32_Umrljivost/05_05L10_umrli_SL/05_05L10_umrli_SL.asp
-
 * https://podatki.nijz.si/pxweb/sl/NIJZ%20podatkovni%20portal/NIJZ%20podatkovni%20portal__3%20Zdravstveno%20stanje%20prebivalstva__3a%20Umrli/?rxid=1bcad944-2947-4c49-8ea7-dfb7131f00e9
 
 * http://www.stat.si/StatWeb/glavnanavigacija/podatki/prikazistaronovico?IdNovice=401
-
 
 ***
 
@@ -41,48 +38,83 @@ Podatke sem pridobila iz spletnih strani:
 source("uvoz/uvoz.r", encoding = "UTF-8")
 ```
 
-Uvozila sem podatke v obliki csv s statističnega urada ter v obliki HTML, kjer sem uvozila dve tabeli iz članka, ki je objavlen na stat.si. 
+Uvozila sem podatke v obliki csv iz spletne strani http://www.nijz.si/ ter v obliki HTML, kjer sem uvozila dve tabeli iz članka, ki je objavlen na http://www.stat.si. 
 
 Pri podatkih, ki sem jih uvozila v obliki HTML, sem namesto ene vrstice, ki se je potem ločila na dve, naredila dve novi vrstici. To sem naredila za povprečno starost umrlih ter pričakovano trajanje življenja, oboje posebej za moške in ženske. 
 Pri obeh tabelah sem decimalne vejice zamenjala za pike in poskrbela da so številke spremenljivke res številke.
 
-
 Poglejmo si tabeli:
 
-```{r tabeleHTML, echo=FALSE}
+```{r tabela1HTML, echo=FALSE}
 kable(tabela1)
+```
+
+\pagebreak
+
+```{r tabela2HTML, echo=FALSE}
 kable(tabela2)
 ```
 
-V obliki csv sem uvozila 3 tabele, ki prikazujejo umrle glede na občine v Sloveniji, umrle po starosti in pa po vzroku.
 
-Ker so tabele večje, poglejmo le začetke dveh tabel:
+V obliki csv sem uvozila 2 tabeli. 
+Prva tabela prikazuje število umrlih glede na starost, spol ter leto.
+Starost je razporejena od 0 let do 100+ let, spol je ločen na moški in ženski, leta pa so od 2010 pa do 2014.
+V tabeli sem uredila spremenljivke, tako da je spol imenska spremenljivka, leto ter število smrti pa številski spremenljivki. 
 
-```{r tabelecsv, echo=FALSE}
-kable(head(umrli.obcine))
-kable(head(umrli.starost))
+
+Iz teh podatkov sem naredila novo tabelo, ki prikazuje število vseh umrlih, povprečno starost umrlih, število umrlih mlajših od 65 let ter stopnjo prezgodnje umrljivosti(delež umrlih mlajših od 65 let), vse glede na spol in leto. Vse spremenljivke so številske, razen spola, ki je imenska.
+
+Tabela:
+
+```{r tabelacsv, echo=FALSE}
+kable(umrljivost)
+```
+
+Druga tabela prikazuje število smrti glede na spol, regijo, leto ter osnovni vzrok smrti.
+Za regije sem si izbrala statistične regije, leta pa ponovno od 2010 do 2014.
+Osnovni vzroki smrti so:
+
+*Neoplazme
+
+*Bolezni obtočil
+
+*Bolezni dihal
+
+*Bolezni prebavil
+
+*Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov
+
+Regije, vzroki ter spol so imenske spremenljivke, leto pa številska.
+
+Iz te tabele sem prav tako naredila manjšo tabelo, ki prikazuje število smrti po vzrokih od leta 2010 pa do 2014:
+
+```{r Bolezni, echo=FALSE}
+kable(Bolezni)
 ```
 
 \pagebreak
-V Grafu sem pokazala število smrti glede na starost:
+
+
+
+V prvem grafu sem prikazala povprečno starost umrlih, glede na spol ter leto. Opaziti je, da povprečna starost z leti narašča, ter da ženske povprečno živijo dlje kot moški.
 
 ```{r graf1, echo=FALSE}
-ggplot(umrli.starost, aes(x = starost , y = X2014)) + 
-      geom_bar(stat='identity') + 
-      labs(title ="število umrlih po starosti v letu 2014", x = "starost", y = "") + 
-      theme_classic()+ 
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+ggplot(umrljivost, aes(x=Leto, y=Povprecje, fill=Spol)) + geom_line(stat = "identity", show.legend=TRUE, aes(color = Spol, group=Spol)) + labs(title ="Povprečna starost umrlih")
 ```
 
 \pagebreak
-V tortnem diagramu sem pokazala število smrti po posameznem vzroku:
 
-```{r tortni, echo=FALSE}
-ggplot(umrlivzrok,aes(x=factor(1),y=X2014,fill=vzrok))+
-      geom_bar(width=1,stat="identity")+coord_polar(theta="y") + 
-      labs(title ="vzroki smrti", x = "", y = "") + 
-      guides(fill=guide_legend(ncol=2, title=NULL)) + 
-      theme(legend.position = "bottom", legend.text = element_text(colour="black", size = 5))
+V drugem grafu pa sem prikazala delež smrti za posamezen vzrok v tortnem diagramu:
+
+```{r graf2, echo=FALSE}
+ggplot(Bolezni, aes(x=factor(1), y=Umrli, fill=Vzroki)) + geom_bar(stat = "identity") +
+      coord_polar(theta = "y") +
+      labs(title="Delež smrti za posamezen vzrok", x="", y="") + theme_minimal() +
+      scale_y_continuous(breaks=NULL)
 ```
+
+
+
+
 
 
