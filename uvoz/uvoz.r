@@ -4,17 +4,17 @@
 ##Uvozim tabelo, ki prikazuje umrle po starosti, spolu in po letih 2010-2014:
 
 stolpci = c("Starost","Spol","Leto","Umrli")
-umrli.starost <- read.csv2(file="podatki/umrli_starost.csv", col.names=stolpci, fileEncoding="UTF-8")
+umrli.starost <- read.csv2(file="podatki/umrli_starost.csv", col.names=stolpci, encoding ="UTF-8")
 
-#poskrbim, da je spol tipa character ter uporabim kodo UTF-8 za prikaz šumnikov
+#poskrbim, da je spol tipa character
 umrli.starost[,2] <- as.character(umrli.starost[,2])
-Encoding(umrli.starost[[2]])<-"UTF-8"
+
 
 
 #Funkcija, ki mi za vsako leto in spol izračuna št. vseh umrlih:
 
 stevilo.umrlih <- function(leto, spol){
-  podatki <- filter(umrli.starost, "Spol" == spol, "Leto" == leto)
+  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
   sum(podatki$Umrli, na.rm=TRUE)
 }
 
@@ -65,20 +65,17 @@ umrljivost[,2] <- as.character(umrljivost[,2])
 #uvozim tabelo, ki prikazuje število smrti po spolu, regijah, vzroku smrti ter letih
 
 imena2 <- c("Spol","Regija","Leto","Vzrok","Število umrlih")
-umrli.vzrok <- read.csv2(file= "podatki/vzrok_smrti.csv",col.names=imena2, fileEncoding="windows-1250")
+umrli.vzrok <- read.csv2(file= "podatki/vzrok_smrti.csv",col.names=imena2, encoding="UTF-8")
 
-#Poskrbimo, da so spol,občine in vzroki tipa character, ter uporabimo kodo UTF-8, da bodo prikazani šumniki
+#Poskrbimo, da so spol,občine in vzroki tipa character
 
-umrli.vzrok[,1:2] <- apply(umrli.vzrok[,1:2], 2, . %>% as.character())
-umrli.vzrok[,4] <- as.character(umrli.vzrok[,4]) 
-Encoding(umrli.vzrok[[1]])<-"UTF-8"
-Encoding(umrli.vzrok[[2]])<-"UTF-8"
-Encoding(umrli.vzrok[[4]])<-"UTF-8"
+umrli.vzrok[,1] <- as.character(umrli.vzrok[,1])
+umrli.vzrok[,4] <- as.character(umrli.vzrok[,4])
+
 
 
 
 Vzroki <- c("Neoplazme","Bolezni obtočil","Bolezni dihal","Bolezni prebavil","Poškodbe, zastrupitve in zunanji vzroki")
-
 
 stevilo_vzroki <- function(vzrok){
   podatki <- filter(umrli.vzrok, Vzrok == vzrok)
@@ -94,6 +91,17 @@ stevilo.vzrok = c(stevilo_vzroki("Neoplazme (C00-D48)"), stevilo_vzroki("Bolezni
 Bolezni <- data.frame(Vzroki, Umrli = stevilo.vzrok)
 
 
+##NAREDIM TABELO - ŠTEVILO SMRTI PO REGIJAH:
+Regije <- umrli.vzrok["Regija"]
+Regije <- Regije[-1,]
+Regije <- c(levels(Regije))
+
+umrli.regija <- function(regija){
+  podatki <- filter(umrli.vzrok, Regija == regija)
+  sum(podatki$Število.umrlih, na.rm=TRUE)
+}
+
+Umrli_regije <- data.frame(Regije)
 
 
 
