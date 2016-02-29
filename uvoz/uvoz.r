@@ -1,9 +1,10 @@
 # 2. faza: Uvoz podatkov
 
+
 ##Uvozim tabelo, ki prikazuje umrle po starosti, spolu in po letih 2010-2014:
 
 stolpci = c("Starost","Spol","Leto","Umrli")
-umrli.starost <- read.csv2(file="podatki/umrli_starost.csv", col.names=stolpci, fileEncoding="cp1250")
+umrli.starost <- read.csv2(file="podatki/umrli_starost.csv", col.names=stolpci, fileEncoding="UTF-8")
 
 #poskrbim, da je spol tipa character ter uporabim kodo UTF-8 za prikaz šumnikov
 umrli.starost[,2] <- as.character(umrli.starost[,2])
@@ -13,7 +14,7 @@ Encoding(umrli.starost[[2]])<-"UTF-8"
 #Funkcija, ki mi za vsako leto in spol izračuna št. vseh umrlih:
 
 stevilo.umrlih <- function(leto, spol){
-  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
+  podatki <- filter(umrli.starost, "Spol" == spol, "Leto" == leto)
   sum(podatki$Umrli, na.rm=TRUE)
 }
 
@@ -64,7 +65,7 @@ umrljivost[,2] <- as.character(umrljivost[,2])
 #uvozim tabelo, ki prikazuje število smrti po spolu, regijah, vzroku smrti ter letih
 
 imena2 <- c("Spol","Regija","Leto","Vzrok","Število umrlih")
-umrli.vzrok <- read.csv2(file= "podatki/vzrok_smrti.csv",col.names=imena2, fileEncoding="cp1250")
+umrli.vzrok <- read.csv2(file= "podatki/vzrok_smrti.csv",col.names=imena2, fileEncoding="windows-1250")
 
 #Poskrbimo, da so spol,občine in vzroki tipa character, ter uporabimo kodo UTF-8, da bodo prikazani šumniki
 
