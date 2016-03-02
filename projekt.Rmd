@@ -58,9 +58,9 @@ kable(tabela2)
 
 V obliki csv sem uvozila 2 tabeli. 
 Prva tabela prikazuje število umrlih glede na starost, spol ter leto.
-Starost je razporejena od 0 let do 100+ let, spol je ločen na moški in ženski, leta pa so od 2010 pa do 2014.
-V tabeli sem uredila spremenljivke, tako da je spol imenska spremenljivka, leto ter število smrti pa številski spremenljivki. 
-
+  *Starost je od 0 let do 100+ let
+  *Spol je ločen na moški in ženski
+  *Leta so od 2010 pa do 2014 - številska spremenljivka
 
 Iz teh podatkov sem naredila novo tabelo, ki prikazuje število vseh umrlih, povprečno starost umrlih, število umrlih mlajših od 65 let ter stopnjo prezgodnje umrljivosti(delež umrlih mlajših od 65 let), vse glede na spol in leto. Vse spremenljivke so številske, razen spola, ki je imenska.
 
@@ -72,24 +72,33 @@ kable(umrljivost)
 
 Druga tabela prikazuje število smrti glede na spol, regijo, leto ter osnovni vzrok smrti.
 Za regije sem si izbrala statistične regije, leta pa ponovno od 2010 do 2014.
+Moje spremenljivke so torej:
+  *Spol (Moški, Ženski)
+  *Regije (statistične regije) - imenska spremenljivka
+  *Leto (2010-2014) - številska spremenljivka
+  *Vzrok smrti (osnovni vzroki smrti) - imenska spremenljivka
+  *MERITEV: število umrlih
+  
 Osnovni vzroki smrti so:
+  *Neoplazme
+  *Bolezni obtočil
+  *Bolezni dihal
+  *Bolezni prebavil
+  *Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov
 
-*Neoplazme
 
-*Bolezni obtočil
+Iz te tabele sem prav tako naredila dve manjši tabeli.
 
-*Bolezni dihal
-
-*Bolezni prebavil
-
-*Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov
-
-Regije, vzroki ter spol so imenske spremenljivke, leto pa številska.
-
-Iz te tabele sem prav tako naredila manjšo tabelo, ki prikazuje število smrti po vzrokih od leta 2010 pa do 2014:
+Prva prikazuje število smrti po vzrokih od leta 2010 pa do 2014:
 
 ```{r Bolezni, echo=FALSE}
 kable(Bolezni)
+```
+
+Druga tabela pa prikazuje število smrti po regijah (skupaj v letih 2010-2014), ter koliko od teh je bilo umrlih Žensk ter koliko Moških:
+
+```{r Regije, echo=FALSE}
+kable(Umrli_regije)
 ```
 
 \pagebreak

@@ -39,17 +39,34 @@ prezgodnja.umrljivost <- function(leto,spol){
   
 #Naredim vektorje za novo tabelo:
 
-Umrli <- c(stevilo.umrlih(2010, "Moški"),stevilo.umrlih(2011, "Moški"),stevilo.umrlih(2012, "Moški"),stevilo.umrlih(2013, "Moški"),stevilo.umrlih(2014, "Moški"),
-                 stevilo.umrlih(2010, "Ženske"),stevilo.umrlih(2011, "Ženske"),stevilo.umrlih(2012, "Ženske"),stevilo.umrlih(2013, "Ženske"),stevilo.umrlih(2014, "Ženske"))
+M <- c(NA)
+povpM <- c(NA)
+mlajsiM <- c(NA)
+prezgodnjaM <- c(NA)
+Z <- c(NA)
+povpZ <- c(NA)
+mlajsiZ <- c(NA)
+prezgodnjaZ <- c(NA)
 
-Povprecje <- c(povprecna.starost(2010, "Moški"),povprecna.starost(2011, "Moški"),povprecna.starost(2012, "Moški"),povprecna.starost(2013, "Moški"),povprecna.starost(2014, "Moški"),
-               povprecna.starost(2010, "Ženske"),povprecna.starost(2011, "Ženske"),povprecna.starost(2012, "Ženske"),povprecna.starost(2013, "Ženske"),povprecna.starost(2014, "Ženske"))
+j=1
+for (i in c(2010:2014)){
+  M[j] <- stevilo.umrlih(i, "Moški")
+  povpM[j] <- povprecna.starost(i, "Moški")
+  mlajsiM[j] <- mlajsi.od.65(i, "Moški")
+  prezgodnjaM[j] <- prezgodnja.umrljivost(i, "Moški")
+  
+  Z[j] <- stevilo.umrlih(i, "Ženske")
+  povpZ[j] <- povprecna.starost(i, "Ženske")
+  mlajsiZ[j] <- mlajsi.od.65(i, "Ženske")
+  prezgodnjaZ[j] <- prezgodnja.umrljivost(i, "Ženske")
+  j <- j+1
+}
 
-Mlajsi.od.65.let <- c(mlajsi.od.65(2010, "Moški"),mlajsi.od.65(2011, "Moški"),mlajsi.od.65(2012, "Moški"),mlajsi.od.65(2013, "Moški"),mlajsi.od.65(2014, "Moški"),
-                      mlajsi.od.65(2010, "Ženske"),mlajsi.od.65(2011, "Ženske"),mlajsi.od.65(2012, "Ženske"),mlajsi.od.65(2013, "Ženske"),mlajsi.od.65(2014, "Ženske"))
 
-Prezgodnja.umrljivost <- c(prezgodnja.umrljivost(2010, "Moški"),prezgodnja.umrljivost(2011, "Moški"),prezgodnja.umrljivost(2012, "Moški"),prezgodnja.umrljivost(2013, "Moški"),prezgodnja.umrljivost(2014, "Moški"),
-                           prezgodnja.umrljivost(2010, "Ženske"),prezgodnja.umrljivost(2011, "Ženske"),prezgodnja.umrljivost(2012, "Ženske"),prezgodnja.umrljivost(2013, "Ženske"),prezgodnja.umrljivost(2014, "Ženske"))
+Umrli <- c(M,Z)
+Povprecje <- c(povpM, povpZ)
+Mlajsi.od.65.let <- c(mlajsiM, mlajsiZ)
+Prezgodnja.umrljivost <- c(prezgodnjaM,prezgodnjaZ)
 
 Leto <- c(2010,2011,2012,2013,2014)
 Spol <- c(rep("Moški", 5),rep("Ženske", 5))
@@ -62,7 +79,7 @@ umrljivost[,2] <- as.character(umrljivost[,2])
 
 
 
-#uvozim tabelo, ki prikazuje število smrti po spolu, regijah, vzroku smrti ter letih
+##uvozim tabelo, ki prikazuje število smrti po spolu, regijah, vzroku smrti ter letih
 
 imena2 <- c("Spol","Regija","Leto","Vzrok","Število umrlih")
 umrli.vzrok <- read.csv2(file= "podatki/vzrok_smrti.csv",col.names=imena2, encoding="UTF-8")
@@ -76,22 +93,26 @@ umrli.vzrok[,4] <- as.character(umrli.vzrok[,4])
 
 
 Vzroki <- c("Neoplazme","Bolezni obtočil","Bolezni dihal","Bolezni prebavil","Poškodbe, zastrupitve in zunanji vzroki")
+Original <- c("Neoplazme (C00-D48)", "Bolezni obtočil (I00-I99)", "Bolezni dihal (J00-J99)", 
+              "Bolezni prebavil (K00-K93)", "Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)")
 
-stevilo_vzroki <- function(vzrok){
+  
+stevilo.vzroki <- function(vzrok){
   podatki <- filter(umrli.vzrok, Vzrok == vzrok)
   sum(podatki$Število.umrlih, na.rm=TRUE)
 }
 
+Umrli <- c(NA)
+j=1
+for (i in Original){
+  Umrli[j] <- stevilo.vzroki(i)
+  j <- j+1
+}
 
-stevilo.vzrok = c(stevilo_vzroki("Neoplazme (C00-D48)"), stevilo_vzroki("Bolezni obtočil (I00-I99)"),
-                  stevilo_vzroki("Bolezni dihal (J00-J99)"), stevilo_vzroki("Bolezni prebavil (K00-K93)"),
-                  stevilo_vzroki("Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)"))
+Bolezni <- data.frame(Vzroki, Umrli)
 
 
-Bolezni <- data.frame(Vzroki, Umrli = stevilo.vzrok)
-
-
-##NAREDIM TABELO - ŠTEVILO SMRTI PO REGIJAH:
+##NAREDIM TABELO - ŠTEVILO SMRTI PO REGIJAH v letih 2010-2014:
 Regije <- umrli.vzrok["Regija"]
 Regije <- Regije[-1,]
 Regije <- c(levels(Regije))
@@ -101,8 +122,27 @@ umrli.regija <- function(regija){
   sum(podatki$Število.umrlih, na.rm=TRUE)
 }
 
-Umrli_regije <- data.frame(Regije)
+umrli.spol <- function(regija, spol){
+  podatki <- filter(umrli.vzrok, Spol==spol, Regija==regija)
+  sum(podatki$Število.umrlih, na.rm=TRUE)
+}
 
+
+
+Umrli <- c(NA)
+Zenske <- c(NA)
+Moski <- c(NA)
+
+j <- 1
+for (i in Regije){
+  Umrli[j] <- umrli.regija(i)
+  Zenske[j] <- umrli.spol(i, "Ženske")
+  Moski[j] <- umrli.spol(i, "Moški")
+  j <- j+1
+  }
+
+
+Umrli_regije <- data.frame(Regije, Umrli, Zenske, Moski)
 
 
 ##Uvoz podatkov iz članka na spletni strani stat.si
