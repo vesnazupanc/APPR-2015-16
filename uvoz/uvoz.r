@@ -11,70 +11,14 @@ umrli.starost[,2] <- as.character(umrli.starost[,2])
 
 
 
-#Funkcija, ki mi za vsako leto in spol izračuna št. vseh umrlih:
+#Naredim novo tabelo, v kateri glede na spol in leto prikažem število umrlih, povprečno starost umrlih,
+#koliko od umrlih je umrlo mlajših od 65 lel ter njihov delež (prezgodnja umrljivost):
 
-stevilo.umrlih <- function(leto, spol){
-  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
-  sum(podatki$Umrli, na.rm=TRUE)
-}
-
-#Funkcija, ki mi za leto in spol izračuna povprečno starost umrlih:
-
-povprecna.starost <- function(leto, spol){
-  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
-  round(sum(c(0:100)*podatki$Umrli)/sum(podatki$Umrli,na.rm=TRUE),2)
-}
-
-
-#Naredim funkcijo, ki mi za vsako leto izračuna št. umrlih mlajših od 65 let ter njihov delež (prezgodnja umrljivost)
-
-mlajsi.od.65 <- function(leto,spol){
-  podatki <- filter(umrli.starost, Spol == spol, Leto == leto)
-  sum(podatki[1:65,4], 2, na.rm=TRUE)
-}
-
-prezgodnja.umrljivost <- function(leto,spol){
-  round((mlajsi.od.65(leto,spol)/stevilo.umrlih(leto,spol))*100,2)
-}
-  
-#Naredim vektorje za novo tabelo:
-
-M <- c(NA)
-povpM <- c(NA)
-mlajsiM <- c(NA)
-prezgodnjaM <- c(NA)
-Z <- c(NA)
-povpZ <- c(NA)
-mlajsiZ <- c(NA)
-prezgodnjaZ <- c(NA)
-
-j=1
-for (i in c(2010:2014)){
-  M[j] <- stevilo.umrlih(i, "Moški")
-  povpM[j] <- povprecna.starost(i, "Moški")
-  mlajsiM[j] <- mlajsi.od.65(i, "Moški")
-  prezgodnjaM[j] <- prezgodnja.umrljivost(i, "Moški")
-  
-  Z[j] <- stevilo.umrlih(i, "Ženske")
-  povpZ[j] <- povprecna.starost(i, "Ženske")
-  mlajsiZ[j] <- mlajsi.od.65(i, "Ženske")
-  prezgodnjaZ[j] <- prezgodnja.umrljivost(i, "Ženske")
-  j <- j+1
-}
-
-
-Umrli <- c(M,Z)
-Povprecje <- c(povpM, povpZ)
-Mlajsi.od.65.let <- c(mlajsiM, mlajsiZ)
-Prezgodnja.umrljivost <- c(prezgodnjaM,prezgodnjaZ)
-
-Leto <- c(2010,2011,2012,2013,2014)
-Spol <- c(rep("Moški", 5),rep("Ženske", 5))
-
-umrljivost <- data.frame(Leto,Spol,Umrli,Povprecje,Mlajsi.od.65.let,Prezgodnja.umrljivost)
-umrljivost[,2] <- as.character(umrljivost[,2])
-
-
+umrljivost <- data.frame(umrli.starost %>% group_by(Leto, Spol) 
+                   %>% summarise(St.Umrlih = sum(Umrli), 
+                                 Povprecna.starost = round(sum(c(0:100)*Umrli)/sum(Umrli,na.rm=TRUE),2),
+                                 Mlajsi.od.65.let = sum(Umrli[1:65], 2, na.rm=TRUE),
+                                 Prezgodnja.umrlivost = round((Mlajsi.od.65.let/St.Umrlih)*100,2)))
 
 
 
@@ -84,65 +28,75 @@ umrljivost[,2] <- as.character(umrljivost[,2])
 imena2 <- c("Spol","Regija","Leto","Vzrok","Število umrlih")
 umrli.vzrok <- read.csv2(file= "podatki/vzrok_smrti.csv",col.names=imena2, encoding="UTF-8")
 
-#Poskrbimo, da so spol,občine in vzroki tipa character
 
-umrli.vzrok[,1] <- as.character(umrli.vzrok[,1])
+#spremenim vrste bolezni tako, da bodo samo besede, brez številčih oznak:
 umrli.vzrok[,4] <- as.character(umrli.vzrok[,4])
+umrli.vzrok$Vzrok <- umrli.vzrok$Vzrok %>% strapplyc("^([^(]*) \\(") %>% unlist() %>% factor()
+
+
+#naredim tabelo, kjer je prikazano št. smrti glede na regijo in bolezen:
+Umrli_vzroki_regije <- data.frame(umrli.vzrok %>% group_by(Regija,Vzrok) 
+                           %>% summarise(Umrli = sum(Število.umrlih)))
 
 
 
 
-Vzroki <- c("Neoplazme","Bolezni obtočil","Bolezni dihal","Bolezni prebavil","Poškodbe, zastrupitve in zunanji vzroki")
-Original <- c("Neoplazme (C00-D48)", "Bolezni obtočil (I00-I99)", "Bolezni dihal (J00-J99)", 
-              "Bolezni prebavil (K00-K93)", "Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)")
-
-  
-stevilo.vzroki <- function(vzrok){
-  podatki <- filter(umrli.vzrok, Vzrok == vzrok)
-  sum(podatki$Število.umrlih, na.rm=TRUE)
-}
-
-Umrli <- c(NA)
-j=1
-for (i in Original){
-  Umrli[j] <- stevilo.vzroki(i)
-  j <- j+1
-}
-
-Bolezni <- data.frame(Vzroki, Umrli)
 
 
-##NAREDIM TABELO - ŠTEVILO SMRTI PO REGIJAH v letih 2010-2014:
-Regije <- umrli.vzrok["Regija"]
-Regije <- Regije[-1,]
-Regije <- c(levels(Regije))
+##Uvozim novo tabelo, da bom lahko primerjala št. smrti v posamezni regiji glede na število prebivalcev:
 
-umrli.regija <- function(regija){
-  podatki <- filter(umrli.vzrok, Regija == regija)
-  sum(podatki$Število.umrlih, na.rm=TRUE)
-}
+stolpci0 <- c("Spol", "Regija", "Starost","Polletje" ,"St.Prebivalcev")
+prebivalci <- read.csv2(file = "podatki/stevilo_prebivalcev.csv", skip=2, 
+                        nrow=(292-2), header=FALSE, strip.white=TRUE, col.names=stolpci0,
+                        fileEncoding="cp1250")
 
-umrli.spol <- function(regija, spol){
-  podatki <- filter(umrli.vzrok, Spol==spol, Regija==regija)
-  sum(podatki$Število.umrlih, na.rm=TRUE)
+#Zbrišem stolpec starost, ki je nepotreben:
+prebivalci$Starost <- NULL
+
+#Uredim prazne prostore z NA ter jih zapolnim z vrednostmi, ki jim pripadajo:
+for (i in stolpci0[c(-3,-5)]) {
+  prebivalci[[i]][prebivalci[i] == " "] <- NA
+  prebivalci[[i]] <- na.locf(prebivalci[[i]])
 }
 
 
-
-Umrli <- c(NA)
-Zenske <- c(NA)
-Moski <- c(NA)
-
-j <- 1
-for (i in Regije){
-  Umrli[j] <- umrli.regija(i)
-  Zenske[j] <- umrli.spol(i, "Ženske")
-  Moski[j] <- umrli.spol(i, "Moški")
-  j <- j+1
-  }
+#Zbrišem odvečne vrstice(vse, ki so NA v "St.Prebivalcev"):
+prebivalci <- prebivalci[!is.na(prebivalci$St.Prebivalcev),]
+prebivalci$Polletje <- as.character(prebivalci$Polletje)
 
 
-Umrli_regije <- data.frame(Regije, Umrli, Zenske, Moski)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##Uvoz podatkov iz članka na spletni strani stat.si
