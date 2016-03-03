@@ -34,10 +34,10 @@ umrli.vzrok[,4] <- as.character(umrli.vzrok[,4])
 umrli.vzrok$Vzrok <- umrli.vzrok$Vzrok %>% strapplyc("^([^(]*) \\(") %>% unlist() %>% factor()
 
 
-#naredim tabelo, kjer je prikazano št. smrti glede na regijo in bolezen:
-Umrli_vzroki_regije <- data.frame(umrli.vzrok %>% group_by(Regija,Vzrok) 
-                           %>% summarise(Umrli = sum(Število.umrlih)))
 
+#še eno, ki prikazuje samo št. smrti v regiji:
+Umrli_regije <- data.frame(umrli.vzrok %>% group_by(Regija) 
+                                  %>% summarise(Umrli = sum(Število.umrlih)))
 
 
 
@@ -65,29 +65,30 @@ prebivalci <- prebivalci[!is.na(prebivalci$St.Prebivalcev),]
 prebivalci$Polletje <- as.character(prebivalci$Polletje)
 
 
+#naredim tabelo, ki prikazuje št. prebivalstev v posamezni regiji, ne glede na leto, spol:
+Prebivalci_regije <- data.frame(prebivalci %>% group_by(Regija) 
+                                  %>% summarise(St.prebivalcev = sum(St.Prebivalcev)))
+
+Prebivalci_regije$Regija <- as.character(Prebivalci_regije$Regija)
+Prebivalci_regije$Regija <- as.factor(Prebivalci_regije$Regija)
 
 
 
+#Spremenim regije v starejše poimenovanje regij, saj imam vse ostale podatke še z prejšnimi imeni za regije:
+Prebivalci_regije$Regija <- as.character(Prebivalci_regije$Regija)
+Prebivalci_regije$Regija <- Prebivalci_regije$Regija %>% gsub("Posavska","Spodnjeposavska",.) 
+Prebivalci_regije$Regija <- Prebivalci_regije$Regija %>% gsub("Primorsko-notranjska","Notranjsko-kraška",.)
+Prebivalci_regije$Regija <- as.factor(Prebivalci_regije$Regija)
 
 
 
+## sedaj združim tabeli Umrli_regije ter Prebivalci_regije:
+
+Umrli.na.prebivalca <- inner_join(Prebivalci_regije, Umrli_regije)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+mmm <- data.frame(Umrli.na.prebivalca %>% group_by(Regija) 
+                                %>% summarise("Umrlih/Prebivalca" = Umrli/St.prebivalcev))
 
 
 
