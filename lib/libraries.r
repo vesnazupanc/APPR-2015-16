@@ -4,6 +4,7 @@ library(ggthemes)
 require(dplyr)
 require(rvest)
 require(gsubfn)
+require(zoo)
 
 # Uvozimo funkcije za delo z datotekami XML.
 source("lib/xml.r", encoding = "UTF-8")
