@@ -228,8 +228,13 @@ ggplot(umrli.vzrok %>% group_by(Vzrok) %>% summarise(Umrli = sum(Število.umrlih
 
 ```
 
+Na zemljevidu Slovenije sem prikazala grobo stopnjo umrljivosti v posamezni regiji. Nizko stopnjo sem obarvala zeleno, višja kot je stopnja pa vedno bolj rdeče. 
+Kot vidimo na zemljevidu, imata Gorenjska ter Podravska nizki stopnji v primerjavi z ostalimi, precej visoke stopnje umrljivosti pa imajo Savinjska, Zasavska ter Spodnjeposavska.
 
 
+```{r vizualizacija, echo=FALSE, warning=FALSE}
+source("vizualizacija/vizualizacija.r", encoding = "UTF-8")
+```
 
 
 
