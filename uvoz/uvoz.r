@@ -18,7 +18,7 @@ umrljivost <- data.frame(umrli.starost %>% group_by(Leto, Spol)
                    %>% summarise(St.Umrlih = sum(Umrli), 
                                  Povprecna.starost = round(sum(c(0:100)*Umrli)/sum(Umrli,na.rm=TRUE),2),
                                  Mlajsi.od.65.let = sum(Umrli[1:65], 2, na.rm=TRUE),
-                                 Prezgodnja.umrlivost = round((Mlajsi.od.65.let/St.Umrlih)*100,2)))
+                                 Prezgodnja.umrljivost = round((Mlajsi.od.65.let/St.Umrlih)*100,2)))
 
 
 
@@ -35,8 +35,8 @@ umrli.vzrok$Vzrok <- umrli.vzrok$Vzrok %>% strapplyc("^([^(]*) \\(") %>% unlist(
 
 
 
-#še eno, ki prikazuje samo št. smrti v regiji:
-Umrli_regije <- data.frame(umrli.vzrok %>% group_by(Regija) 
+#še eno, ki prikazuje št. smrti v regiji glede na posamezno leto:
+Umrli_regije <- data.frame(umrli.vzrok %>% group_by(Regija, Leto) 
                                   %>% summarise(Umrli = sum(Število.umrlih)))
 
 
@@ -45,32 +45,31 @@ Umrli_regije <- data.frame(umrli.vzrok %>% group_by(Regija)
 
 ##Uvozim novo tabelo, da bom lahko primerjala št. smrti v posamezni regiji glede na število prebivalcev:
 
-stolpci0 <- c("Spol", "Regija", "Starost","Polletje" ,"St.Prebivalcev")
+stolpci0 <- c("Spol", "Regija", "Starost","Leto" ,"St.Prebivalcev")
 prebivalci <- read.csv2(file = "podatki/stevilo_prebivalcev.csv", skip=2, 
-                        nrow=(292-2), header=FALSE, strip.white=TRUE, col.names=stolpci0,
+                        nrow=(2908-2), header=FALSE, strip.white=TRUE, col.names=stolpci0,
                         fileEncoding="cp1250")
 
-#Zbrišem stolpec starost, ki je nepotreben:
-prebivalci$Starost <- NULL
+
 
 #Uredim prazne prostore z NA ter jih zapolnim z vrednostmi, ki jim pripadajo:
-for (i in stolpci0[c(-3,-5)]) {
+for (i in stolpci0[c(-5)]) {
   prebivalci[[i]][prebivalci[i] == " "] <- NA
-  prebivalci[[i]] <- na.locf(prebivalci[[i]])
+  prebivalci[[i]] <- na.locf(prebivalci[[i]], na.rm = FALSE)
 }
 
 
 #Zbrišem odvečne vrstice(vse, ki so NA v "St.Prebivalcev"):
 prebivalci <- prebivalci[!is.na(prebivalci$St.Prebivalcev),]
-prebivalci$Polletje <- as.character(prebivalci$Polletje)
 
 
-#naredim tabelo, ki prikazuje št. prebivalstev v posamezni regiji, ne glede na leto, spol:
-Prebivalci_regije <- data.frame(prebivalci %>% group_by(Regija) 
-                                  %>% summarise(St.prebivalcev = sum(St.Prebivalcev)))
 
-Prebivalci_regije$Regija <- as.character(Prebivalci_regije$Regija)
-Prebivalci_regije$Regija <- as.factor(Prebivalci_regije$Regija)
+
+#Naredim tabelo, ki prikazuje št. prebivalcev v posamezni regiji glede na leto:
+
+Prebivalci_regije <- data.frame(prebivalci %>% group_by(Regija,Leto) 
+                                %>% summarise(St.Prebivalcev = sum(St.Prebivalcev)))
+
 
 
 
@@ -84,19 +83,25 @@ Prebivalci_regije$Regija <- as.factor(Prebivalci_regije$Regija)
 
 ## sedaj združim tabeli Umrli_regije ter Prebivalci_regije:
 
-Umrli.na.prebivalca <- inner_join(Prebivalci_regije, Umrli_regije)
+Umrli_stopnje <- inner_join(Prebivalci_regije, Umrli_regije)
 
 
-mmm <- data.frame(Umrli.na.prebivalca %>% group_by(Regija) 
-                                %>% summarise("Umrlih/Prebivalca" = Umrli/St.prebivalcev))
+## Izračunam GROBO STOPNJO UMRLJIVOSTI   Groba stopnja umrljivosti je razmerje med 
+#številom umrlih v koledarskem letu in številom prebivalcev v istem letu, pomnoženo s 100.000: 
+Umrli_stopnje$Groba.stopnja.umrljivosti <- (Umrli_stopnje
+                                                  %>% group_by(Regija,Leto)
+                                                  %>% summarise(Groba.stopnja.umrljivosti = (Umrli/St.Prebivalcev)*100000))[[3]]
 
 
+#Dodam urejenostno spremenljivko, ki pove ali je v posamezni regiji in letu stopnja umrljivosti visoka, normalna ali nizka.
+#Za kriterij bom vzela: pod 400-nizka, 400:500-normalna, nad 500-visoka
 
 
-
-
-
-
+Visina.stopnje <- rep('normalna', length(Umrli_stopnje$Groba.stopnja.umrljivosti))
+Stopnja <- factor(Visina.stopnje,levels = c('nizka', 'normalna', 'visoka'),ordered = TRUE)
+Stopnja[Umrli_stopnje$Groba.stopnja.umrljivosti <= 400] <- 'nizka'
+Stopnja[Umrli_stopnje$Groba.stopnja.umrljivosti >= 500] <- 'visoka'
+Umrli_stopnje$Stopnja <- Stopnja
 
 
 
