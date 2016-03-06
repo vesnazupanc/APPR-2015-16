@@ -18,7 +18,7 @@ output:
 source("lib/libraries.r", encoding = "UTF-8")
 ```
 
-# Izbira teme
+# Izbira teme #
 
 Analizirala bom umrljivost v Sloveniji. Podatke, ki jih bom pridobila bom analizirala po najpogostejših vzrokih za smrt, starosti ter številu smrti po občinah.
 
@@ -32,9 +32,9 @@ Podatke sem pridobila iz spletnih strani:
 
 ***
 
-# Obdelava, uvoz in čiščenje podatkov
+# Obdelava, uvoz in čiščenje podatkov #
 
-```{r uvoz, echo=FALSE}
+```{r uvoz, echo=FALSE, warning=FALSE}
 source("uvoz/uvoz.r", encoding = "UTF-8")
 ```
 
@@ -56,13 +56,29 @@ kable(tabela2)
 ```
 
 
-V obliki csv sem uvozila 2 tabeli. 
-Prva tabela prikazuje število umrlih glede na starost, spol ter leto.
-  *Starost je od 0 let do 100+ let
-  *Spol je ločen na moški in ženski
-  *Leta so od 2010 pa do 2014 - številska spremenljivka
+V obliki csv sem uvozila 3 tabele. 
 
-Iz teh podatkov sem naredila novo tabelo, ki prikazuje število vseh umrlih, povprečno starost umrlih, število umrlih mlajših od 65 let ter stopnjo prezgodnje umrljivosti(delež umrlih mlajših od 65 let), vse glede na spol in leto. Vse spremenljivke so številske, razen spola, ki je imenska.
+Prva tabela prikazuje število umrlih glede na starost, spol ter leto.
+
+  * __Starost__ (od 0 let do 100+ let) - _faktor_
+  
+  * __Spol__ (moški, ženski) - _imenska spremenljivka_
+  
+  * __Leta__ (2010 - 2014) - _številska spremenljivka_
+
+Iz teh podatkov sem naredila novo tabelo, ki prikazuje število vseh umrlih, povprečno starost umrlih, število umrlih mlajših od 65 let ter stopnjo prezgodnje umrljivosti(delež umrlih mlajših od 65 let), vse glede na spol in leto. 
+  
+  * __Leta__ (2010 - 2014) - _številska spremeljivka_
+  
+  * __Spol__ (moški, ženski) - _imenska spremenjlivka_
+  
+  * __MERITVE__: 
+  
+    + _št.umrlih_
+         
+    + _Št. umrlih mlajših od 65 let_
+            
+    + _delež umrlih mlajših od 65 let_ - __prezgodnja umrljivost__
 
 Tabela:
 
@@ -72,55 +88,146 @@ kable(umrljivost)
 
 Druga tabela prikazuje število smrti glede na spol, regijo, leto ter osnovni vzrok smrti.
 Za regije sem si izbrala statistične regije, leta pa ponovno od 2010 do 2014.
+
 Moje spremenljivke so torej:
-  *Spol (Moški, Ženski)
-  *Regije (statistične regije) - imenska spremenljivka
-  *Leto (2010-2014) - številska spremenljivka
-  *Vzrok smrti (osnovni vzroki smrti) - imenska spremenljivka
-  *MERITEV: število umrlih
   
-Osnovni vzroki smrti so:
-  *Neoplazme
-  *Bolezni obtočil
-  *Bolezni dihal
-  *Bolezni prebavil
-  *Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov
+  * __Spol__ (moški, ženski) - _faktor_
+  
+  * __Regije__ (statistične regije) - _faktor_
+  
+  * __Leto__ (2010-2014) - _številska spremenljivka_
+  
+  * __Vzrok smrti__ (osnovni vzroki smrti) - _faktor_
+  
+  * __MERITEV__: _število umrlih_
+  
+__Osnovni vzroki smrti__ so:
 
+  1. Neoplazme
 
-Iz te tabele sem prav tako naredila dve manjši tabeli.
+  2. Bolezni obtočil
 
-Prva prikazuje število smrti po vzrokih od leta 2010 pa do 2014:
+  3. Bolezni dihal
+
+  4. Bolezni prebavil
+
+  5. Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov
+
 
 ```{r Bolezni, echo=FALSE}
-kable(Bolezni)
+kable(head(umrli.vzrok))
 ```
 
-Druga tabela pa prikazuje število smrti po regijah (skupaj v letih 2010-2014), ter koliko od teh je bilo umrlih Žensk ter koliko Moških:
+Druga tabela (tabela `Umrli_regije`), ki sem jo naredila, da bom lažje analizirala stopnjo smrti po regijah in letih, pa prikazuje število smrti po regijah, glede na leto.
 
-```{r Regije, echo=FALSE}
-kable(Umrli_regije)
+```{r Umrli_regije, echo=FALSE}
+kable(head(Umrli_regije))
 ```
 
-\pagebreak
+
+Naknadno sem uvozila še eno tabelo, ki prikazuje število prebivalcev v posamezni regiji, glede na spol, leto in starost.
+  
+  * __Regija__ (statistične regije) - _faktor_
+  
+  * __Spol__(moški, ženski) - _faktor_
+  
+  * __Starost__ (starostne skupine) - _faktor_
+  
+  * __Leto__ (2010-2014) - _številska spremenljivka_
+  
+  * __MERITEV__: _Število prebivalcev_
+
+```{r prebivalci, echo=FALSE}
+kable(head(prebivalci))
+```
+
+Iz te tabele sem naredila novo tabelo (tabela `Prebivalci_regije`), saj starosti ter spola pravzaprav za analizo stopnje umrljivosti po regijah nisem potrebovala. Nova tabela vsebuje le:
+  
+  * __Regija__ (statistične regije) - _faktor_
+  
+  * __Leto__ (2010-2014) - _številska spremenljivka_
+  
+  * __MERITEV__: _število prebivalcev_
+
+```{r Prebivalci_regije, echo=FALSE}
+kable(head(Prebivalci_regije))
+```
+
+Ker sem želela združiti tabeli `Previvalci_regije` ter `Umrli_regije` po regijah in letih, sem najprej morala popraviti regije tako, da so se usklajevale. V tabeli `Prebivalci_regije` sem tako morala spremeniti poimenovanje dveh regij, saj so bile poimenovane drugače, kot v `Umrli_regije`. Spremenila sem:
+  
+  * Posavska -> Spodnjeposavska
+  
+  * Primorsko-notranjska -> Notranjsko-kraška
+  
+Ko so se regije usklajevale, sem združila tabeli in tako dobila novo tabelo `Umrli_stopnje`, ki je prikazovala število prebivalcev ter št. umrlih v posamezni regiji, glede na leto. Tabeli sem nato dodala dva nova stolpca. V prvem dodanem stolpcu sem prikazala _grobo stopnjo umrljivosti_, ki se izračuna tako, da razmerje med številom umrlih ter številom prebivalcev pomnožimo z 100000. Drug dodan stolpec pa prikazuje ali je ta stopnja _nizka_, _normalna_ ali _visoka_.
+
+Tako sem dobila tabelo, s stolpci:
+
+  * __Regija__ (statistične regije) - _faktor_
+  
+  * __Leto__ (2010-2014) - _številska spremenjivka_
+  
+  * __St.Prebivalcev__ - _številska spremenjivka_
+  
+  * __Umrli__ - _številska spremenjivka_
+
+  * __Groba.stopnja.umrljivosti__ - _številska spremenjivka_
+  
+  * __Stopnja__ - _urejenostna spremenjivka_ z leveli:
+    
+    + *nizka* (če je groba stopnja umrljivosti manjša ali enaka 400)
+    
+    + *normalna* (če je groba stopnja umrljivosti med 400 in 500)
+    
+    + *visoka* (če je groba stopnja umrljivosti večja ali enaka 500)
+    
+```{r Stopnje, echo=FALSE}
+
+kable(head(Umrli_stopnje))
+
+```
 
 
+##Grafi
 
 V prvem grafu sem prikazala povprečno starost umrlih, glede na spol ter leto. Opaziti je, da povprečna starost z leti narašča, ter da ženske povprečno živijo dlje kot moški.
 
 ```{r graf1, echo=FALSE}
-ggplot(umrljivost, aes(x=Leto, y=Povprecje, fill=Spol)) + geom_line(stat = "identity", show.legend=TRUE, aes(color = Spol, group=Spol)) + labs(title ="Povprečna starost umrlih")
+ggplot(umrljivost, aes(x=Leto, y=Povprecna.starost, color=Spol)) + 
+  geom_line(stat = "identity", show.legend=TRUE, aes(color = Spol, group=Spol)) + 
+  scale_color_manual(name="Spol", values = c("Ženske"="red", "Moški"="blue")) + labs(title ="Povprečna starost umrlih")+
+  theme_bw()
 ```
 
-\pagebreak
-
-V drugem grafu pa sem prikazala delež smrti za posamezen vzrok v tortnem diagramu:
+Drugi graf prikazuje prezgodnjo umrljivost, glede na leto in spol. V grafu vidimo, da je prezgodnja umrljivost pri moških precej višja, kot pri ženskah, vednar pa z leti upada.
 
 ```{r graf2, echo=FALSE}
-ggplot(Bolezni, aes(x=factor(1), y=Umrli, fill=Vzroki)) + geom_bar(stat = "identity") +
-      coord_polar(theta = "y") +
-      labs(title="Delež smrti za posamezen vzrok", x="", y="") + theme_minimal() +
-      scale_y_continuous(breaks=NULL)
+
+ggplot(umrljivost, aes(x=Leto, y=Prezgodnja.umrljivost, fill=Spol)) + 
+  geom_bar(stat = "identity",position="dodge") + 
+  scale_fill_manual(name="Spol", values = c("Ženske"="red", "Moški"="blue")) + labs(title ="Povprečna starost umrlih")+
+  theme_bw()
+
 ```
+
+
+Tretji graf prikazuje delež umrlih glede na vzrok. Kot lahko vidimo, je naveč smrti posledica bolezni obtočil, takoj za njimi do Neoplazme, majši delež pa predstavljajo bolezni dihal, prevavil ter posledice zunanjih vzrokov.
+
+```{r graf3, echo=FALSE}
+
+ggplot(umrli.vzrok %>% group_by(Vzrok) %>% summarise(Umrli = sum(Število.umrlih)),
+       aes(x=factor(1), y=Umrli, fill=Vzrok)) + 
+  geom_bar(width = 1, stat = "identity") + 
+  coord_polar(theta = "y") + 
+  labs(title ="Število umrlih po vzroku smrti", x="", y="")+
+  scale_y_continuous(breaks=NULL)+
+  theme_minimal()+
+  guides(fill=guide_legend(ncol=2, title=NULL)) + 
+  theme(legend.position = "bottom")
+
+
+```
+
 
 
 
