@@ -22,11 +22,32 @@ pretvori.zemljevid <- function(zemljevid) {
 
 SLO <- pretvori.zemljevid(zemljevid)
 
-Zemljevid.Umrli <- ggplot() + geom_polygon(data = umrli.vzrok  %>% 
-                                             filter(Leto == 2014) %>%
+
+##Naredim zemljevid, kjer prikažem stopnjo umrljivosti (zelena-nizka, rdeča-visoka)
+
+Zemljevid.Umrli <- ggplot() + geom_polygon(data = Umrli_stopnje %>%
                                              right_join(SLO, by = c("Regija" = "NAME_1")),
-                                             aes(x = long, y = lat, group = group,
-                                                 fill = Umrli)) + ggtitle("Umrli v sloveniji") 
+                                           aes(x = long, y = lat, group = group, fill = Groba.stopnja.umrljivosti),
+                                             color = "grey") +
+                                             scale_fill_gradient(low = "#11FF00", high = "#FF1100")+
+                                             guides(fill = guide_colorbar(title = "Stopnja")) +
+                                             ggtitle("Groba stopnja umrljivosti v Sloveniji")
 
+#Na zemljevid dodam imena regij
 
+Zemljevid.Umrli <- Zemljevid.Umrli +
+  geom_text(data = SLO %>% group_by(id, NAME_1) %>% summarise(x = mean(long), y = mean(lat)),
+                            aes(x = x, y = y, label = NAME_1), size = 2.5)
+
+#odstranim še oznake na x,y osi ter poimenovanje osi, ozadnje naredim belo
+
+Zemljevid.Umrli <- Zemljevid.Umrli +
+  labs(x="", y="")+
+  scale_y_continuous(breaks=NULL)+
+  scale_x_continuous(breaks=NULL)+
+  theme_minimal()
+  
+  
 print(Zemljevid.Umrli)
+  
+  
