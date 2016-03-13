@@ -47,7 +47,7 @@ Umrli_regije <- data.frame(umrli.vzrok %>% group_by(Regija, Leto)
 
 stolpci0 <- c("Spol", "Regija", "Starost","Leto" ,"St.Prebivalcev")
 prebivalci <- read.csv2(file = "podatki/stevilo_prebivalcev.csv", skip=2, 
-                        nrow=(2908-2), header=FALSE, strip.white=TRUE, col.names=stolpci0,
+                        nrow=(2798-2), header=FALSE, strip.white=TRUE, col.names=stolpci0,
                         fileEncoding="cp1250")
 
 
