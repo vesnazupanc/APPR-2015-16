@@ -29,7 +29,7 @@ Zemljevid.Umrli <- ggplot() + geom_polygon(data = Umrli_stopnje %>%
                                              right_join(SLO, by = c("Regija" = "NAME_1")),
                                            aes(x = long, y = lat, group = group, fill = Groba.stopnja.umrljivosti),
                                              color = "grey") +
-                                             scale_fill_gradient(low = "#11FF00", high = "#FF1100")+
+                                             scale_fill_gradient(low = "#11FF00", high = "#FF0000")+
                                              guides(fill = guide_colorbar(title = "Stopnja")) +
                                              ggtitle("Groba stopnja umrljivosti v Sloveniji")
 
