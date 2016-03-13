@@ -1,4 +1,6 @@
 # 2. faza: Uvoz podatkov
+source("lib/libraries.r", encoding = "UTF-8")
+
 
 
 ##Uvozim tabelo, ki prikazuje umrle po starosti, spolu in po letih 2010-2014:
@@ -8,7 +10,10 @@ umrli.starost <- read.csv2(file="podatki/umrli_starost.csv", col.names=stolpci, 
 
 #poskrbim, da je spol tipa character
 umrli.starost[,2] <- as.character(umrli.starost[,2])
-
+#Starost naj bo številska spremenljivka
+umrli.starost$Starost <- as.character(umrli.starost$Starost)
+umrli.starost$Starost <- umrli.starost$Starost %>% strapplyc("^([0-9]+)") %>% unlist() %>% as.numeric()
+umrli.starost$Starost <- as.numeric(umrli.starost$Starost)
 
 
 #Naredim novo tabelo, v kateri glede na spol in leto prikažem število umrlih, povprečno starost umrlih,
@@ -94,14 +99,64 @@ Umrli_stopnje$Groba.stopnja.umrljivosti <- (Umrli_stopnje
 
 
 #Dodam urejenostno spremenljivko, ki pove ali je v posamezni regiji in letu stopnja umrljivosti visoka, normalna ali nizka.
-#Za kriterij bom vzela: pod 400-nizka, 400:500-normalna, nad 500-visoka
+#Za kriterij bom vzela: pod 1000-nizka, 1000:1600-normalna, nad 1600-visoka
 
 
 Visina.stopnje <- rep('normalna', length(Umrli_stopnje$Groba.stopnja.umrljivosti))
 Stopnja <- factor(Visina.stopnje,levels = c('nizka', 'normalna', 'visoka'),ordered = TRUE)
-Stopnja[Umrli_stopnje$Groba.stopnja.umrljivosti <= 400] <- 'nizka'
-Stopnja[Umrli_stopnje$Groba.stopnja.umrljivosti >= 500] <- 'visoka'
+Stopnja[Umrli_stopnje$Groba.stopnja.umrljivosti <= 1000] <- 'nizka'
+Stopnja[Umrli_stopnje$Groba.stopnja.umrljivosti >= 1600] <- 'visoka'
 Umrli_stopnje$Stopnja <- Stopnja
+
+
+
+### UVOZ NOVE TABELE ZA ANALIZO PROCENTA UMRLIH GLEDE NA STAROST:
+stolpci1 <- c("Starost", "Spol", "Leto" ,"St.Prebivalcev")
+prebivalci2 <- read.csv2(file = "podatki/prebivalci_starost.csv", skip=2, 
+                         nrow=(1517-2), header=FALSE, strip.white=TRUE, col.names=stolpci1,
+                         fileEncoding="cp1250")
+
+
+
+#Uredim prazne prostore z NA ter jih zapolnim z vrednostmi, ki jim pripadajo:
+for (i in stolpci1[c(-4)]) {
+  prebivalci2[[i]][prebivalci2[i] == " "] <- NA
+  prebivalci2[[i]] <- na.locf(prebivalci2[[i]], na.rm = FALSE)
+}
+
+
+#Zbrišem odvečne vrstice(vse, ki so NA v "St.Prebivalcev"):
+prebivalci2 <- prebivalci2[!is.na(prebivalci2$St.Prebivalcev),]
+
+#Starost spremenim v številski zapis:
+prebivalci2$Starost <- as.character(prebivalci2$Starost)
+prebivalci2$Starost <- prebivalci2$Starost %>% strapplyc("^([0-9]+)") %>% unlist() %>% as.numeric()
+
+#Leto spremenim v številski zapis:
+prebivalci2$Leto <- as.character(prebivalci2$Leto)
+prebivalci2$Leto <- prebivalci2$Leto %>% strapplyc("^([0-9]+)") %>% unlist() %>% as.numeric()
+
+#Naredim novo tabelo, ki jo bom potrebovala za analizo umrlih glede na starost:
+TABELA3 <- inner_join(prebivalci2,umrli.starost)
+
+TABELA3 <- (TABELA3 %>% group_by(Starost) %>%
+              summarise(Umrli= sum(Umrli), St.Prebivalcev = sum(St.Prebivalcev)))
+
+TABELA3$Procent.umrlih <- (group_by(TABELA3, Starost) %>% summarise(Umrli.procent = (Umrli/St.Prebivalcev)*100))[[2]] %>% round(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
