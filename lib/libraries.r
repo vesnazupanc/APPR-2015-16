@@ -12,6 +12,7 @@ library(ggplot2)
 library(dplyr)
 library(MASS)
 library(mgcv)
+library(extrafont)
 
 # Uvozimo funkcije za delo z datotekami XML.
 source("lib/xml.r", encoding = "UTF-8")
