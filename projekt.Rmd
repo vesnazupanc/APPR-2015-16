@@ -3,10 +3,16 @@ title: "Analiza smrti v Sloveniji"
 author: "Vesna Zupanc"
 output:
   pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true 
+    highlight: tango
     includes:
       in_header: lib/styles.sty
     latex_engine: xelatex
   word_document: default
+  
+  
 ---
 
 ```{r setup, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
@@ -17,8 +23,9 @@ output:
 # Uvoz vseh potrebnih knjižnic
 source("lib/libraries.r", encoding = "UTF-8")
 ```
+\pagebreak
 
-# Izbira teme #
+#IZBIRA TEME
 
 Analizirala bom umrljivost v Sloveniji. Podatke, ki jih bom pridobila bom analizirala po najpogostejših vzrokih za smrt, starosti ter številu smrti po občinah.
 
@@ -30,17 +37,26 @@ Podatke sem pridobila iz spletnih strani:
 
 * http://www.stat.si/StatWeb/glavnanavigacija/podatki/prikazistaronovico?IdNovice=401
 
-***
+* http://pxweb.stat.si/pxweb/Database/Dem_soc/05_prebivalstvo/32_Umrljivost/05_05L10_umrli_SL/05_05L10_umrli_SL.asp
 
-# Obdelava, uvoz in čiščenje podatkov #
+* http://pxweb.stat.si/pxweb/Database/Dem_soc/05_prebivalstvo/32_Umrljivost/10_05L20_umrli_RE_OBC/10_05L20_umrli_RE_OBC.asp
 
-```{r uvoz, echo=FALSE, warning=FALSE}
+* http://pxweb.stat.si/pxweb/Database/Dem_soc/05_prebivalstvo/10_stevilo_preb/10_05C20_prebivalstvo_stat_regije/10_05C20_prebivalstvo_stat_regije.asp
+
+\pagebreak
+
+#OBDELAVA, UVOZ IN ČIŠČENJE PODATKOV
+
+```{r uvoz, echo=FALSE, message=FALSE, warning=FALSE}
 source("uvoz/uvoz.r", encoding = "UTF-8")
 ```
 
-Uvozila sem podatke v obliki csv iz spletne strani http://www.nijz.si/ ter v obliki HTML, kjer sem uvozila dve tabeli iz članka, ki je objavlen na http://www.stat.si. 
 
-Pri podatkih, ki sem jih uvozila v obliki HTML, sem namesto ene vrstice, ki se je potem ločila na dve, naredila dve novi vrstici. To sem naredila za povprečno starost umrlih ter pričakovano trajanje življenja, oboje posebej za moške in ženske. 
+## Podatki v obliki HTML
+
+Uvozila sem podatke v obliki HTML iz spletne strani http://www.nijz.si/ ter v obliki HTML, kjer sem uvozila dve tabeli iz članka, ki je objavlen na http://www.stat.si. 
+
+Pri podatkih sem namesto ene vrstice, ki se je potem ločila na dve, naredila dve novi vrstici. To sem naredila za povprečno starost umrlih ter pričakovano trajanje življenja, oboje posebej za moške in ženske. 
 Pri obeh tabelah sem decimalne vejice zamenjala za pike in poskrbela da so številke spremenljivke res številke.
 
 Poglejmo si tabeli:
@@ -49,15 +65,17 @@ Poglejmo si tabeli:
 kable(tabela1)
 ```
 
-\pagebreak
+
 
 ```{r tabela2HTML, echo=FALSE}
 kable(tabela2)
 ```
 
+## Podatki v obliki CSV
 
-V obliki csv sem uvozila 3 tabele. 
+V obliki csv sem uvozila več tabel, nekaj sem jih uvozila tudi naknadno, saj sem jih potrebovala za vizualizacijo in napredno analizo. 
 
+### TABELA1
 Prva tabela prikazuje število umrlih glede na starost, spol ter leto.
 
   * __Starost__ (od 0 let do 100+ let) - _faktor_
@@ -85,6 +103,8 @@ Tabela:
 ```{r tabelacsv, echo=FALSE}
 kable(umrljivost)
 ```
+
+### TABELA2
 
 Druga tabela prikazuje število smrti glede na spol, regijo, leto ter osnovni vzrok smrti.
 Za regije sem si izbrala statistične regije, leta pa ponovno od 2010 do 2014.
@@ -118,12 +138,14 @@ __Osnovni vzroki smrti__ so:
 kable(head(umrli.vzrok))
 ```
 
-Druga tabela (tabela `Umrli_regije`), ki sem jo naredila, da bom lažje analizirala stopnjo smrti po regijah in letih, pa prikazuje število smrti po regijah, glede na leto.
+
+Iz te tabele pa sem naredino novo (tabela `Umrli_regije`), da sem lažje analizirala stopnjo smrti po regijah in letih. Tabela `Umrli_regije` tako prikazuje število smrti po regijah, glede na leto.
 
 ```{r Umrli_regije, echo=FALSE}
 kable(head(Umrli_regije))
 ```
 
+### TABELA3
 
 Naknadno sem uvozila še eno tabelo, ki prikazuje število prebivalcev v posamezni regiji, glede na spol, leto in starost.
   
@@ -152,6 +174,8 @@ Iz te tabele sem naredila novo tabelo (tabela `Prebivalci_regije`), saj starosti
 ```{r Prebivalci_regije, echo=FALSE}
 kable(head(Prebivalci_regije))
 ```
+
+### Združitev tabel `Previvalci_regije` ter `Umrli_regije`
 
 Ker sem želela združiti tabeli `Previvalci_regije` ter `Umrli_regije` po regijah in letih, sem najprej morala popraviti regije tako, da so se usklajevale. V tabeli `Prebivalci_regije` sem tako morala spremeniti poimenovanje dveh regij, saj so bile poimenovane drugače, kot v `Umrli_regije`. Spremenila sem:
   
@@ -187,6 +211,9 @@ kable(head(Umrli_stopnje))
 
 ```
 
+\pagebreak
+
+#VIZUALIZACIJA
 
 ##Grafi
 
@@ -199,6 +226,8 @@ ggplot(umrljivost, aes(x=Leto, y=Povprecna.starost, color=Spol)) +
   theme_bw()
 ```
 
+\pagebreak
+
 Drugi graf prikazuje prezgodnjo umrljivost, glede na leto in spol. V grafu vidimo, da je prezgodnja umrljivost pri moških precej višja, kot pri ženskah, vednar pa z leti upada.
 
 ```{r graf2, echo=FALSE}
@@ -206,10 +235,11 @@ Drugi graf prikazuje prezgodnjo umrljivost, glede na leto in spol. V grafu vidim
 ggplot(umrljivost, aes(x=Leto, y=Prezgodnja.umrljivost, fill=Spol)) + 
   geom_bar(stat = "identity",position="dodge") + 
   scale_fill_manual(name="Spol", values = c("Ženske"="red", "Moški"="blue")) + labs(title ="Prezgodnja umrljivost")+
-  theme_bw()
+  theme_bw() 
 
 ```
 
+\pagebreak
 
 Tretji graf prikazuje delež umrlih glede na vzrok. Kot lahko vidimo, je naveč smrti posledica bolezni obtočil, takoj za njimi do Neoplazme, majši delež pa predstavljajo bolezni dihal, prevavil ter posledice zunanjih vzrokov.
 
@@ -227,15 +257,88 @@ ggplot(umrli.vzrok %>% group_by(Vzrok) %>% summarise(Umrli = sum(Število.umrlih
 
 
 ```
+\pagebreak
+
+##Zemljevid
 
 Na zemljevidu Slovenije sem prikazala grobo stopnjo umrljivosti v posamezni regiji. Nizko stopnjo sem obarvala zeleno, višja kot je stopnja pa vedno bolj rdeče. 
 Kot vidimo na zemljevidu, imata Gorenjska ter Podravska najnižji stopnji, saj sta obarvani najbolj živo zeleno, precej visoki stopnji umrljivosti pa imata Goriška ter Osrednjaslovenija.
 
 
-```{r vizualizacija, echo=FALSE, warning=FALSE}
+```{r vizualizacija, echo=FALSE, message=FALSE, warning=FALSE}
 source("vizualizacija/vizualizacija.r", encoding = "UTF-8")
 ```
 
+\pagebreak
 
+#NAPREDNA ANALIZA
+
+##Razdelitev regij na skupine
+```{r analiza, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+source("analiza/analiza.r", encoding = "UTF-8")
+```
+
+Najprej sem podatke o stopnji umrljivosti po regijah razvrstila v 3 skupine, glede na to koliko so oddaljeni od povprečij. Podatke sem prikazala na zemljevidu. Regije, ki so najbližje centroidom vsake skupine pa so:
+
+```{r skupine, echo=FALSE}
+
+kable(REG)
+
+```
+
+Zemljevid, kjer so skupine obarvane s 3 različnimi barvami:
+
+```{r zemljevid_skupine, echo=FALSE}
+
+print(ZEM1)
+
+```
+
+##Analiza povezanosti med starostjo in številom umrlih
+
+Želela sem ugotoviti, ali obstaja kakšna povezanost med starostjo in število umrlih pri tej starosti. Uporabila sem povezanost med umrlimi in starostjo s formulo, ki se glasi: $Umrli ~ Starost + I(Starost^2) + I(Starost^3) + I(Starost^4) + I(Starost^5) + I(Starost^6)$. Formula je precej dolga, še vedno pa prileganje ni dobro. Ugotovila pa sem, da število umrlih s starostjo narašča, potem pa hitro pade, kar je verjetno posledica tega, da je zelo starih prebivalcev malo in zato je tudi število umrlih pri teh starostih manj.
+
+```{r starost-umrli, echo=FALSE}
+
+print(GRAF1)
+
+```
+
+Ugotovila sem, da bi bilo bolje primerjati kakšen je procent umrlih pri določeni starosti, glede na vse umrle. Zato, da sem to lahko primerjala, sem najprej potrebovala novo tabelo, ki mi prikazuje število prebivalcev glede na starost in jo združila z tabelo, ki prikazuje število umrlih glede na starost.
+Moja nova tabela:
+
+```{r TABELA3, echo=FALSE}
+
+kable(head(TABELA3))
+
+```
+
+Iz te tabele sem potem naredila model, kjer sem uporabila funkcijo `gam`, ter narisala graf, ki z modro črto kaže povezanost med starostjo in procentom umrlih.
+
+```{r starost-procent, echo=FALSE}
+
+print(GRAF2)
+
+```
+
+Kot vidimo v grau, procent umrlih najprej narašča zelo počasi, potem pa vedno hitreje, kar je pravzaprav pričakovano.
+
+Z funkcijo `gam` pa sem naredila tudi napoved procenta umrlih za starost od 100 do 115 let, za katere pravzaprav nisem imela podatkov. Napoved prikazujem v tabeli:
+
+```{r NAPOVED1, echo=FALSE}
+
+kable(NAPOVED1)
+
+```
+
+##Napoved za povprečno starost umrlih
+
+Kot zadnjo analizo pa sem naredila napoved za povprečno starost umrlih od leta 2015 do leta 2025. Napovedi sem naredila posebej za moške in ženske, ter jih prikazala v tabeli:
+
+```{r NAPOVEDF2, echo=FALSE}
+
+kable(NAPOVED2)
+
+```
 
 
