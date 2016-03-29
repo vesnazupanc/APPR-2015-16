@@ -178,6 +178,13 @@ tabela1[9,1] <- 'Povprečna starost umrlih - moški'
 tabela1[10,1] <- 'Povprečna starost umrlih - ženske'
 tabela1[11,1] <- 'Pričakovano trajanje življenja - moški'
 tabela1[12,1] <- 'Pričakovano trajanje življenja - ženske'
+tabela1[2,1] <- "Moški"
+tabela1[3,1] <- "Ženske"
+tabela1[5,1] <- "Dečki"
+tabela1[6,1] <- "Deklice"
+
+
+
 names(tabela2)<- tabela2[1,]
 tabela2 = tabela2[-1,]
 Encoding(tabela2[[1]]) <- "UTF-8"
@@ -191,5 +198,8 @@ tabela1[,2:5] <- apply(tabela1[,2:5], 2, . %>% gsub("\\.", "", .) %>%
 
 
 
-
-
+  
+  
+  
+  
+  

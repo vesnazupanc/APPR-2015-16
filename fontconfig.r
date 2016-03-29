@@ -4,7 +4,6 @@
 #   loadfonts()
 # Slednja ukaza izvedite samo enkrat in ju ne vključujte v program!
 
-library(extrafont)
 
 # Prosim, da uporabljate eno od sledečih vrednosti za parameter family:
 # * "Arial"
