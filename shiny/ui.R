@@ -12,6 +12,24 @@ shinyUI(fluidPage(
              sidebarPanel(
                uiOutput("stopnja")
              ),
-             mainPanel(plotOutput("zemljevid")))
-  )
-))
+             sidebarPanel(
+               uiOutput("leto")
+             ),
+             mainPanel(plotOutput("zemljevid"))),
+    
+    tabPanel("Prezgodnja umrljivost",
+             sidebarPanel(
+               uiOutput("spol")
+             ),
+             
+             mainPanel(plotOutput("prezgodnja"))),
+    
+    tabPanel("Vzrok smrti",
+             sidebarPanel(
+               uiOutput("spol")
+             ),
+             sidebarPanel(
+               uiOutput("vzrok")
+             ),
+             mainPanel(plotOutput("vzroki")))
+)))
