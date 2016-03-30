@@ -98,7 +98,6 @@ Iz teh podatkov sem naredila novo tabelo, ki prikazuje število vseh umrlih, pov
             
     + _delež umrlih mlajših od 65 let_ - __prezgodnja umrljivost__
 
-Tabela:
 
 ```{r tabelacsv, echo=FALSE}
 kable(umrljivost)
@@ -267,6 +266,7 @@ Kot vidimo na zemljevidu, imata Gorenjska ter Podravska najnižji stopnji, saj s
 
 ```{r vizualizacija, echo=FALSE, message=FALSE, warning=FALSE}
 source("vizualizacija/vizualizacija.r", encoding = "UTF-8")
+print(Zemljevid.Umrli)
 ```
 
 \pagebreak

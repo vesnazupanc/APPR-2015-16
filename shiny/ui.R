@@ -9,7 +9,7 @@ shinyUI(fluidPage(
     tabPanel("Predstavitev",
       sidebarPanel(
         h3("Kdo sem?"),
-        p("Sem", strong("Vesna Zupanc"), "študentka 2.letnika Finančne matematike."),
+        p("Sem", strong("Vesna Zupanc,"), "študentka 2.letnika Finančne matematike."),
         br(),
         h3("Kontaktni podatki:"),
         p(strong("e-mail:"),"vesna.zupanc@student.fmf.uni-lj.si")
@@ -47,7 +47,7 @@ shinyUI(fluidPage(
              sidebarPanel(h3("Zemljevid stopenj umrljivosti"),
                           p("Na zemljevidu so prikazane stopnje umrljivosti, glede na posamezno leto."),
                           p("Formula, po kateri se izračuna (groba) stopnja umrljivosti je:"),
-                          p("Y = Umrli/St.Prebivalcev)*100000,", align = "center"),
+                          p("Y = (Umrli/St.Prebivalcev)*100000,", align = "center"),
                           p("stopnje umrljivosti pa so rangirane po naslednjem kriteriju:"),
                           p("* ",em("nizka"), " <-> ", "Y <= 1000"),
                           p("* ",em("normalna"), " <-> ", " 1000 < Y < 1600"),
