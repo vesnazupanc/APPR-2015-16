@@ -8,16 +8,7 @@ shinyServer(function(input, output) {
     t
   })
   
-  output$stopnja <- renderUI(
-    selectInput("stopnja", label="Izberi stopnjo umrljivosti",
-                choices=c("Vse", levels(Umrli_stopnje$Stopnja)))
-    )
-  
-  output$leto <- renderUI(
-    selectInput("leto", label="Izberi leto",
-                choices=c(2010:2014))
-  )
-  
+
   podatki1 <- Umrli_stopnje
   output$zemljevid<-renderPlot({
     if (length(input$stopnja) > 0 && input$stopnja %in% podatki1$Stopnja) {
@@ -40,35 +31,43 @@ shinyServer(function(input, output) {
       theme_minimal()
   })
   
-  output$spol <- renderUI(
-    selectInput("spol", label="Izberi spol",
-                choices=c("Moški", "Ženske"))
-  )
+
   
   output$prezgodnja<-renderPlot({
     data <- umrljivost[c(-3,-4,-5)] %>% filter(Spol == input$spol)
-    ggplot() + geom_line(data = data, aes(x=Leto, y=Prezgodnja.umrljivost)) +
-      geom_point(data = data, aes(x=Leto, y=Prezgodnja.umrljivost), size=3) +
+    
+    if (input$spol== "Moški"){
+      x <- "blue"
+    }
+    else {
+      x <- "red"
+    }
+    
+    ggplot() + geom_line(data = data, aes(x=Leto, y=Prezgodnja.umrljivost), colour = x) +
+      geom_point(data = data, aes(x=Leto, y=Prezgodnja.umrljivost), colour = x, size=3) +
       labs(title ="Prezgodnja umrljivost")+
       theme_bw()
-
   })
-  
-  output$vzrok <- renderUI(
-    selectInput("vzrok", label="Izberi vzrok smrti",
-                choices=levels(umrli.vzrok$Vzrok))
-  )
   
   output$vzroki<-renderPlot({
     data <- umrli.vzrok %>% group_by(Spol,Leto,Vzrok) %>% 
       summarise(Umrli = sum(Število.umrlih)) %>% 
-      filter(Spol == input$spol, Vzrok == input$vzrok)
-    ggplot() + geom_bar(data = data, aes(x=Leto, y=Umrli)) +
+      filter(Spol == input$spol2, Vzrok == input$vzrok)
+    
+    if (input$spol2 == "Moški"){
+      x <- "darkgreen"
+    }
+    else {
+      x <- "darkred"
+    }
+    
+    ggplot() + geom_bar(data = data, aes(x=Leto, y=Umrli), fill = x, stat = "identity") +
       labs(title ="Število umrlih glede na vzrok")+
       theme_bw()
-    
   })
+
   
+ 
   
 })
 
