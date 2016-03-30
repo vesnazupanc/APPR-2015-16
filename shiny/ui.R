@@ -2,22 +2,16 @@ library(shiny)
 
 shinyUI(fluidPage(
   
-  titlePanel("Slovenske občine"),
+  titlePanel("Umrljivost v Sloveniji"),
   
   tabsetPanel(
-      tabPanel("Velikost družine",
-               DT::dataTableOutput("druzine")),
-      
-      tabPanel("Število naselij",
-               sidebarPanel(
-                  uiOutput("pokrajine")
-                ),
-               mainPanel(plotOutput("naselja"))),
-      
-      tabPanel("Zemljevid",
-               plotOutput("zemljevid")),
-      
-      tabPanel("Število naselij in površina",
-               plotOutput("povrsina"))
-    )
+    tabPanel("Podatki po starosti",
+             DT::dataTableOutput("starost")),
+    
+    tabPanel("Stopnja umrljivosti po regijah",
+             sidebarPanel(
+               uiOutput("stopnja")
+             ),
+             mainPanel(plotOutput("zemljevid")))
+  )
 ))
