@@ -2,8 +2,8 @@
 # Analiza smrti v Sloveniji
 
 Avtor: Vesna Zupanc
-KONTAKT:
-  e-mail: vesna.zupanc@student.fmf.uni-lj.si
+
+KONTAKT: vesna.zupanc@student.fmf.uni-lj.si
   
 Repozitorij z gradivi pri predmetu APPR v študijskem letu 2015/16.
 
