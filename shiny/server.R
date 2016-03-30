@@ -14,7 +14,7 @@ shinyServer(function(input, output) {
     if (length(input$stopnja) > 0 && input$stopnja %in% podatki1$Stopnja) {
       data <- podatki1 %>% filter(Stopnja == input$stopnja, Leto == input$leto)
     } else {
-      data <- podatki1
+      data <- podatki1 %>% filter(Leto == input$leto)
     }
     ggplot() + geom_polygon(data = data %>%
                               right_join(SLO, by = c("Regija" = "NAME_1")),
@@ -24,7 +24,7 @@ shinyServer(function(input, output) {
                                    "normalna" = "orange",
                                    "visoka" = "red")) +
       geom_text(data = SLO %>% group_by(id, NAME_1) %>% summarise(x = mean(long), y = mean(lat)),
-                aes(x = x, y = y, label = NAME_1), size = 2.5)+
+                aes(x = x, y = y, label = NAME_1), size = 3)+
       labs(x="", y="")+
       scale_y_continuous(breaks=NULL)+
       scale_x_continuous(breaks=NULL)+
