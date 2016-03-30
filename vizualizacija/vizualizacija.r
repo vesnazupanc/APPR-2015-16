@@ -48,6 +48,6 @@ Zemljevid.Umrli <- Zemljevid.Umrli +
   theme_minimal()
   
   
-print(Zemljevid.Umrli)
+
   
   
