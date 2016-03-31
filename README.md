@@ -3,6 +3,8 @@
 
 Avtor: Vesna Zupanc
 
+KONTAKT: vesna.zupanc@student.fmf.uni-lj.si
+  
 Repozitorij z gradivi pri predmetu APPR v študijskem letu 2015/16.
 
 ## Tematika
