@@ -93,10 +93,6 @@ NAPOVED1 <- data.frame(Starost = c(100:115), Procent.umrlih = predict(mgam, data
 
 
 
-
-
-
-
 ### NAREDIM NAPOVEDI, ZA POVPREČNO STAROSTI MOŠKIH IN ŽENSK V LETIH 2015:2025
 
 #NAPOVED ZA POVPREČNO STAROST SMRTI ZA ŽENSKE
