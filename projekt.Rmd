@@ -1,7 +1,6 @@
 ---
 title: "Analiza smrti v Sloveniji"
 author: "Vesna Zupanc"
-runtime: shiny
 output:
   pdf_document:
     highlight: tango
@@ -10,6 +9,7 @@ output:
     latex_engine: xelatex
     number_sections: yes
     toc: yes
+  word_document: default
 ---
 
 ```{r setup, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
@@ -337,4 +337,8 @@ Kot zadnjo analizo pa sem naredila napoved za povprečno starost umrlih od leta 
 kable(NAPOVED2)
 
 ```
+
+#SHINY APLIKACIJA
+
+Za zaključek pa sem naredila še aplikacijo Shiny, v kateri si lahko pogledamo nekaj podatkov, grafov in zemljevid. Aplikacija je vključena v poročilo prevedeno v HTML.
 ***
